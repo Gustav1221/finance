@@ -44,14 +44,32 @@ var financeController = (function(){
             exp: 0
         }
     }
+    return{
+        addItem: function(type,desc,val){
+            var item, id;
+            if(data.allItems[type].length === 0)id =1;
+            else{
+                id = (data.allItems[type][data.allItems[type].length - 1].id +1);
+            }
+            if(type === 'inc'){
+                item = new Income(id,desc,val);
+            }else{
+                item = new Expense(id,desc,val);
+            }
+            data.allItems[type].push(item);
+        },
+        seeData: function(){
+            return data;
+        }
+    }
 })();
 //Программын холбогч контроллер
 var appController = (function(uiController, fnController){
     var ctrlAddItem = (function(){
             //1.oruulah ugugdluudiig delgetsnees olj avna
-            console.log(uiController.getInput())
+            var input = uiController.getInput();
             //2.olj avsan datanuudaa finance cotrollert damjuuulj tend hadgalna
-    
+            financeController.addItem(input.type, input.desc, input.val)
             //3.olj avsan datanuudaa web deeree tohiroh hesegt bairluulna
     
             //4.tusuviig tootsoolno
@@ -75,5 +93,5 @@ var appController = (function(uiController, fnController){
         }
     }
     
-})(uiController, appController)
+})(uiController, financeController)
 appController.init();
