@@ -7,7 +7,11 @@ var uiController = (function(){
         inputValue: '.add__value',
         inputAddPtn: '.add__btn',
         listIncome: '.income__list',
-        listExpense: '.expenses__list'
+        listExpense: '.expenses__list',
+        tusuvLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        persentageLabel: '.budget__expenses--percentage'
     }
     return{
         //public service
@@ -29,6 +33,17 @@ var uiController = (function(){
                 el.value = '';
             })
             fieldsArr[0].focus();
+        },
+        tusuviigUzuuleh: function(uldegdel){
+            document.querySelector(DOMstrings.tusuvLabel).textContent = uldegdel.tusuv;
+            document.querySelector(DOMstrings.incomeLabel).textContent = uldegdel.totalInc;
+            document.querySelector(DOMstrings.expenseLabel).textContent = uldegdel.totalExp;
+            if(uldegdel.huvi !== 0){
+                document.querySelector(DOMstrings.persentageLabel).textContent = uldegdel.huvi + '%';
+
+            }else{
+                document.querySelector(DOMstrings.persentageLabel).textContent = uldegdel.huvi ;
+            }        
         },
         addListItem: function(item, type){
             // орлого зарлагын элементийг агуулсан html-ийг бэлтгэнэ.
@@ -90,7 +105,7 @@ var financeController = (function(){
             //tusuviig shineer tootsoolno
             data.tusuv = data.totalItems.inc - data.totalItems.exp;
             //orlogo zarlagiin huviig tootsoolno
-            data.huvi = Math.round((data.totalItems.exp / data.totalItems.inc) *100);
+            data.huvi = Math.round((data.totalItems.exp / data.totalItems.inc)*100);
 
         },
         lastRemain: function(){
@@ -138,7 +153,7 @@ var appController = (function(uiController, fnController){
             //5.etssiin uldegdel 
             var uldegdel = financeController.lastRemain();
             //6.Tootsoog delgetsend gargana
-            console.log(uldegdel);
+            uiController.tusuviigUzuuleh(uldegdel);
 
         }else alert('Тайлбар болон утгаа хамт оруулна уу.');
         })
@@ -155,6 +170,12 @@ var appController = (function(uiController, fnController){
     return{
         init : function(){
             console.log('Application started..');
+            uiController.tusuviigUzuuleh({
+                tusuv: 0,
+                huvi: 0,
+                totalInc: 0,
+                totalExp: 0
+            }),
             setupEventListeners();
         }
     }
