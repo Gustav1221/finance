@@ -11,7 +11,8 @@ var uiController = (function(){
         tusuvLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
-        persentageLabel: '.budget__expenses--percentage'
+        persentageLabel: '.budget__expenses--percentage',
+        containerDiv: '.container'
     }
     return{
         //public service
@@ -34,6 +35,10 @@ var uiController = (function(){
             })
             fieldsArr[0].focus();
         },
+        deleteListItem: function(id){
+            var el = document.getElementById(id);
+            el.parentNode.removeChild(el);
+        },
         tusuviigUzuuleh: function(uldegdel){
             document.querySelector(DOMstrings.tusuvLabel).textContent = uldegdel.tusuv;
             document.querySelector(DOMstrings.incomeLabel).textContent = uldegdel.totalInc;
@@ -50,10 +55,10 @@ var uiController = (function(){
             var html, list;
             if(type === 'inc'){ 
                 list = DOMstrings.listIncome;
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div> </div>';
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div> </div>';
             }else{
                 list = DOMstrings.listExpense;
-                html = '<div class="item clearfix" id="expense-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__percentage">21%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div></div>';
+                html = '<div class="item clearfix" id="exp-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__percentage">21%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div></div>';
             }
             // тэр html дотроо орлого зарлагын утгуудыг replace ашиглан өөрчилнө.
             html = html.replace('%id%', item.id);
@@ -107,6 +112,15 @@ var financeController = (function(){
             //orlogo zarlagiin huviig tootsoolno
             data.huvi = Math.round((data.totalItems.exp / data.totalItems.inc)*100);
 
+        },
+        deleteItem: function(type,id){
+            var ids = data.items[type].map(function(el){
+                return el.id;
+            })
+            var index = ids.indexOf(id);
+            if(index !== -1){
+                data.items[type].splice(index,1);
+            }
         },
         lastRemain: function(){
             return{
@@ -166,6 +180,19 @@ var appController = (function(uiController, fnController){
             if(event.keyCode === 13) ctrlAddItem();
                
         });
+        document.querySelector(DOM.containerDiv).addEventListener('click', function(e){
+            var id = (e.target.parentNode.parentNode.parentNode.parentNode.id);
+            if(id) {
+                var arr = id.split("-");
+                var type = arr[0];
+                var itemId = parseInt(arr[1]);
+            // 1. Санхүүгийн модиулаас type, id ашиглаад устгана
+            financeController.deleteItem(type, itemId);
+            // 2. Дэлгэц дээрээс энэ элементийг устгана
+            uiController.deleteListItem(id);
+            // 3. Үлдэгдэл тооцоог шинэчилж харуулна
+            }
+        })
     }
     return{
         init : function(){
